@@ -9,7 +9,7 @@ group :test do
   gem 'ruby_cowsay'
   gem 'rspec'
   gem 'ruby-prof'
-  gem 'perftools.rb' #, git: 'git://github.com/tmm1/perftools.rb.git'
+
   # Pretty printed test output
   gem 'turn',      require: false
   gem 'simplecov', require: false
@@ -21,7 +21,7 @@ group :test do
   gem 'guard-livereload'
   gem 'guard-coffeescript'
   gem 'guard-spork', github: 'guard/guard-spork'
-  gem 'rack-perftools_profiler', require: 'rack/perftools_profiler'
+
   gem 'spork'
   gem 'fuubar'
   # gem 'webmock'

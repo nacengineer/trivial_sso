@@ -18,7 +18,6 @@ Spork.prefork do
   require 'rspec/autorun'
   require 'rspec/mocks'
   require 'factory_girl'
-  require 'perftools'
 
   # Requires supporting ruby files with custom matchers and macros, etc,
   # in spec/support/ and its subdirectories.
@@ -30,14 +29,6 @@ Spork.prefork do
     config.mock_with :rspec
 
     config.order = "random"
-
-    config.before :suite do
-      PerfTools::CpuProfiler.start("#{profile_directory}/rspec_profile")
-    end
-
-    config.after :suite do
-      PerfTools::CpuProfiler.stop
-    end
 
     def profile_directory
       directory = "/tmp/trivial_sso"

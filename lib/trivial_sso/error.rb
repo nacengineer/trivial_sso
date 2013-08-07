@@ -43,6 +43,13 @@ module TrivialSso
       end
     end
 
+    # Missing configuration value.
+    class MissingSecret < CookieError
+      def to_s
+        "Missing secret, need to define sso_secret"
+      end
+    end
+
     # Missing Rails configuration value.
     class MissingRails < CookieError
       def to_s

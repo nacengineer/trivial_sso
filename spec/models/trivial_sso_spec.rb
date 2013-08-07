@@ -1,32 +1,50 @@
 require 'active_support/core_ext'
-
 require 'trivial_sso'
 require 'forgery'
 require 'securerandom'
 
-describe TrivialSso do
+require 'rails'
 
-  def before
-    # Stub out our Rails config so we can test things properly.
-    Rails.stubs(:configuration).returns(Rails::Application::Configuration.allocate)
-    Rails.configuration.sso_secret = SecureRandom.hex(64)
-    @user_name      = Forgery::Internet.user_name
-    @data           = Forgery::LoremIpsum.words(20)
-    @userdata       = {'username' => @user_name, 'data' => @data}
-    @expired_cookie = TrivialSso::Login.cookie(
-      {'username' => 'testor'}, 2.seconds.ago
-    )
+# mock out rails app for sso_secret
+module TrivialSso
+  class Application < Rails::Application
+    config.sso_secret = SecureRandom.hex(64)
+  end
+end
+
+describe TrivialSso do
+  let(:sso_secret) {SecureRandom.hex(64)}
+  let(:userdata) {
+    {
+      'username' => Forgery::Internet.user_name,
+      'groups'   => ['one', 'two']
+    }
+  }
+  let(:trivial_sso) {TrivialSso::Login.new}
+  # let(:expired_cookie) {
+  #   TrivialSso::Login.cookie({'username' => 'testor'}, 2.seconds.ago)
+  # }
+
+  it "does set the data" do
+    trivial_sso.data = userdata
+
+    trivial_sso.data.should          be_kind_of OpenStruct
+    trivial_sso.data.username.should eq userdata['username']
+    trivial_sso.data.groups.should   eq userdata['groups']
   end
 
   it "does create cookie with userdata" do
-    TrivialSso::Login.cookie(@userdata).should_not be_nil
+    trivial_sso.data = userdata
+    trivial_sso.wrap.should be_kind_of String
   end
 
-  # def test_create_cookie_and_decode_it
-  #   mycookie = TrivialSso::Login.cookie(@userdata)
-  #   data     = TrivialSso::Login.decode_cookie(mycookie)
-  #   assert_equal data['data'],  @data
-  # end
+  it "should encode and decode" do
+    trivial_sso.data = userdata
+    cookie           = trivial_sso.wrap
+    trivial_sso.cookie = cookie
+
+    trivial_sso.unwrap.should eq userdata
+  end
 
   # def test_throw_exception_on_missing_username
   #   assert_raise TrivialSso::Error::NoUsernameCookie do
