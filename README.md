@@ -1,3 +1,5 @@
+[![Code Climate](https://codeclimate.com/github/nacengineer/trivialsso.png)](https://codeclimate.com/github/nacengineer/trivialsso)
+
 ## TrivialSso
 
 A very simple gem to help with creating and reading cookies across multiple sites in a Ruby on Rails application.
