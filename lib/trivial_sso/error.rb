@@ -9,9 +9,9 @@ module TrivialSso
     end
 
     # Cookie can not be verified, data has been altered
-    class BadCookie < CookieError
+    class BadData < CookieError
       def to_s
-        "Login cookie can not be verified!"
+        "The data supplied was not valid. i.e. bad cookie data given"
       end
     end
 
@@ -23,14 +23,14 @@ module TrivialSso
     end
 
     # Cookie is missing
-    class MissingCookie < CookieError
+    class MissingData < CookieError
       def to_s
         "Login cookie is missing!"
       end
     end
 
     # Cookie is lacking a username.
-    class NoUsernameCookie < CookieError
+    class NoUsernameData < CookieError
       def to_s
         "Need username to create cookie"
       end
@@ -39,7 +39,10 @@ module TrivialSso
     # Missing configuration value.
     class MissingConfig < CookieError
       def to_s
-        "Missing secret configuration for cookie, need to define config.sso_secret"
+        <<-HERE
+        Missing secret configuration for cookie, need to define
+        config.sso_secret
+        HERE
       end
     end
 
@@ -54,6 +57,30 @@ module TrivialSso
     class MissingRails < CookieError
       def to_s
         "Rails isn't loaded, you need Rails to use trivial_sso"
+      end
+    end
+
+    class BadDataSupplied < CookieError
+      def to_s
+        <<-HERE
+        The data supplied is useless to me. i.e. Can't Wrap or Unwrap.
+        Try passing me some good data.
+        HERE
+      end
+    end
+
+    class BadExpireTime < CookieError
+      def to_s
+        <<-HERE
+        The expire_time is useless to me. i.e. its not an Time object
+        transormed to integer time. Please retry with good data.
+        HERE
+      end
+    end
+
+    class WrongMode < CookieError
+      def to_s
+        "Can't use same object to decode and encode"
       end
     end
 

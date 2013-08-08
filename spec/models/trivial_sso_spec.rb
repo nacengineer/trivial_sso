@@ -20,65 +20,77 @@ describe TrivialSso do
       'groups'   => ['one', 'two']
     }
   }
-  let(:trivial_sso) {TrivialSso::Login.new}
+
+  let(:encode) {TrivialSso::Login.new({secret: sso_secret})}
+  let(:decode) {TrivialSso::Login.new({secret: sso_secret})}
+
   # let(:expired_cookie) {
   #   TrivialSso::Login.cookie({'username' => 'testor'}, 2.seconds.ago)
   # }
 
   it "does set the data" do
-    trivial_sso.data = userdata
+    encode.data = userdata
+    encode.mode.should eq :wrap
 
-    trivial_sso.data.should          be_kind_of OpenStruct
-    trivial_sso.data.username.should eq userdata['username']
-    trivial_sso.data.groups.should   eq userdata['groups']
+    encode.data.should          be_kind_of OpenStruct
+    encode.data.username.should eq userdata['username']
+    encode.data.groups.should   eq userdata['groups']
   end
 
   it "does create cookie with userdata" do
-    trivial_sso.data = userdata
-    trivial_sso.wrap.should be_kind_of String
+    encode.data = userdata
+    encode.wrap.should be_kind_of String
   end
 
   it "should encode and decode" do
-    trivial_sso.data = userdata
-    cookie           = trivial_sso.wrap
-    trivial_sso.cookie = cookie
+    encode.data = userdata
+    decode.data = encode.wrap
 
-    trivial_sso.unwrap.should eq userdata
+    decode.unwrap.should eq OpenStruct.new(userdata)
   end
 
-  # def test_throw_exception_on_missing_username
-  #   assert_raise TrivialSso::Error::NoUsernameCookie do
-  #     mycookie = TrivialSso::Login.cookie("")
-  #   end
-  # end
+  it "throw exception on missing username" do
+    expect {
+      encode.data = {username: ""}
+      encode.wrap
+    }.to raise_error TrivialSso::Error::NoUsernameData
+  end
 
-  # def test_expire_date_exists
-  #   # in a full rails environment, this will return an ActiveSupport::TimeWithZone
-  #   assert TrivialSso::Login.expire_date.is_a?(Time),
-  #     "proper Time object not returned"
-  # end
+  it "throw exception on blank cookie" do
+    expect {
+      decode.data = ""
+      decode.unwrap
+    }.to raise_error TrivialSso::Error::MissingData
+  end
 
-  # def test_expire_date_is_in_future
-  #   assert (DateTime.now < TrivialSso::Login.expire_date),
-  #     "Expire date is in the past - cookie will expire immediatly."
-  # end
+  it "raise exception bad signature when given cookie w/o signature as data source" do
+    expect {
+      decode.data = "BAhbB0kiC2RqbGVlMgY6BkVUbCsHo17iTg"
+      decode.unwrap
+    }.to raise_error TrivialSso::Error::BadData
+  end
 
-  # def test_raise_exception_on_blank_cookie
-  #   assert_raise TrivialSso::Error::MissingCookie do
-  #     TrivialSso::Login.decode_cookie("")
-  #   end
-  # end
+  it "raise exception bad message when given cookie w/o encryped data" do
+    expect {
+      decode.data = "--5b3164f6d1f09fb00d6905d073b18bc45a859b50"
+      decode.unwrap
+    }.to raise_error TrivialSso::Error::BadData
+  end
 
-  # def test_raise_exception_on_bad_cookie
-  #   assert_raise TrivialSso::Error::BadCookie do
-  #     TrivialSso::Login.decode_cookie("BAhbB0kiC2RqbGVlMgY6BkVUbCsHo17iTg")
-  #   end
-  # end
+  it "raise exception on expired cookie" do
+    expect {
+      encode.data        = userdata
+      encode.expire_time = (Time.now - 1000).to_i
+      decode.data        = encode.wrap
+      decode.unwrap
+    }.to raise_error TrivialSso::Error::LoginExpired
+  end
 
-  # def test_raise_exception_on_expired_cookie
-  #   assert_raise TrivialSso::Error::LoginExpired do
-  #     TrivialSso::Login.decode_cookie(@expired_cookie)
-  #   end
-  # end
+  it "raises if expire_time not valid" do
+    expect {
+      encode.data = userdata
+      encode.expire_time = %w(this is bad data)
+    }.to raise_error TrivialSso::Error::BadExpireTime
+  end
 
 end
