@@ -1,8 +1,8 @@
 module TrivialSso
   class Login
 
-    attr_accessor :data, :secret, :expire_time
-    attr_reader :wrap, :unwrap, :mode, :secret
+    attr_accessor :data, :secret, :expire_time, :struct
+    attr_reader   :wrap, :unwrap, :mode, :secret
 
     def initialize(opts = {})
       opts[:expire_time] = default_expire unless opts[:expire_time]
@@ -33,7 +33,8 @@ module TrivialSso
     def unwrap
       mode_set?
       raise Error::WrongMode unless mode == __method__
-      TrivialSso::UnWrap.new(data, sso_secret).unwrap
+      response = TrivialSso::UnWrap.new(data, sso_secret).unwrap
+      struct ? OpenStruct.new(response) : response
     end
 
     def sso_secret

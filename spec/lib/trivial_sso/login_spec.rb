@@ -12,7 +12,7 @@ module TrivialSso
   end
 end
 
-describe TrivialSso do
+describe TrivialSso::Login do
   let(:sso_secret) {SecureRandom.hex(64)}
   let(:userdata) {
     {
@@ -47,7 +47,14 @@ describe TrivialSso do
   end
 
   it "should encode and decode" do
-    decode.unwrap.should eq OpenStruct.new(userdata)
+    decode.unwrap.should be_kind_of Hash
+    decode.unwrap.should eq userdata
+  end
+
+  it "should encode and decode as OpenStruct" do
+    decode.struct = true
+    decode.unwrap.should be_kind_of OpenStruct
+    decode.unwrap.should eq OpenStruct.new userdata
   end
 
   it "throw exception on missing username" do
