@@ -2,11 +2,11 @@ module TrivialSso
   class Login
 
     attr_accessor :data, :secret, :expire_time
-    attr_reader :wrap, :unwrap, :mode
+    attr_reader :wrap, :unwrap, :mode, :secret
 
     def initialize(opts = {})
       opts[:expire_time] = default_expire unless opts[:expire_time]
-      opts[:secret]      = sso_secret     unless opts[:secret]
+      opts[:secret]      = default_secret unless opts[:secret]
       opts.each {|k,v| send("#{k}=".to_sym, v) if available_opts.include?(k.to_sym)}
     end
 
@@ -42,6 +42,20 @@ module TrivialSso
 
    private
 
+    def default_secret
+      rails_sso_secret || SecureRandom.hex(64)
+    end
+
+    def rails_sso_secret
+      if defined?(Rails) && Rails.configuration.sso_secret
+        Rails.configuration.sso_secret
+      # assume if Rails is defined then we want to use it's secret
+      elsif defined?(Rails)
+        raise Error::MissingRailsConfig
+      else
+        false
+      end
+    end
 
     def mode_set?
       raise Error::BadDataSupplied  if mode.nil? || mode.empty?
@@ -57,14 +71,6 @@ module TrivialSso
 
     def time_or_default(value)
       value.to_i.nonzero? ? value.to_i : default_expire
-    end
-
-    def check_for_rails
-      defined?(Rails) || (raise Error::MissingRails)
-    end
-
-    def sso_secret
-      check_for_rails ? Rails.configuration.sso_secret : SecureRandom.hex(64)
     end
 
     def default_expire

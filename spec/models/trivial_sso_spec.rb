@@ -21,31 +21,32 @@ describe TrivialSso do
     }
   }
 
-  let(:encode) {TrivialSso::Login.new({secret: sso_secret})}
-  let(:decode) {TrivialSso::Login.new({secret: sso_secret})}
+  let(:encode) {
+    TrivialSso::Login.new({secret: sso_secret, data: userdata})
+  }
 
-  # let(:expired_cookie) {
-  #   TrivialSso::Login.cookie({'username' => 'testor'}, 2.seconds.ago)
-  # }
+  let(:decode) {
+    TrivialSso::Login.new({secret: sso_secret, data: encode.wrap})
+  }
+
+  let(:expired_encode) {
+    TrivialSso::Login.new(
+      {data: userdata, secret: sso_secret, expire_time: (Time.now - 1000).to_i}
+    )
+  }
 
   it "does set the data" do
-    encode.data = userdata
-    encode.mode.should eq :wrap
-
+    encode.mode.should          eq :wrap
     encode.data.should          be_kind_of OpenStruct
     encode.data.username.should eq userdata['username']
     encode.data.groups.should   eq userdata['groups']
   end
 
   it "does create cookie with userdata" do
-    encode.data = userdata
     encode.wrap.should be_kind_of String
   end
 
   it "should encode and decode" do
-    encode.data = userdata
-    decode.data = encode.wrap
-
     decode.unwrap.should eq OpenStruct.new(userdata)
   end
 
@@ -79,18 +80,20 @@ describe TrivialSso do
 
   it "raise exception on expired cookie" do
     expect {
-      encode.data        = userdata
-      encode.expire_time = (Time.now - 1000).to_i
-      decode.data        = encode.wrap
+      decode.data         = expired_encode.wrap
       decode.unwrap
     }.to raise_error TrivialSso::Error::LoginExpired
   end
 
   it "raises if expire_time not valid" do
     expect {
-      encode.data = userdata
       encode.expire_time = %w(this is bad data)
     }.to raise_error TrivialSso::Error::BadExpireTime
+  end
+
+  it "uses rails sso if Rails.defined" do
+    encode.secret = Rails.configuration.sso_secret
+    encode.sso_secret.should eq Rails.configuration.sso_secret
   end
 
 end

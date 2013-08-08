@@ -37,7 +37,7 @@ module TrivialSso
     end
 
     # Missing configuration value.
-    class MissingConfig < CookieError
+    class MissingRailsConfig < CookieError
       def to_s
         <<-HERE
         Missing secret configuration for cookie, need to define
