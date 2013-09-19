@@ -71,7 +71,9 @@ Retrieve the contents of the cookie by calling decode_cookie
 @userdata = TrivialSso::Login.decode_cookie(cookies[:sso_login])
 ```
 
-This will throw an exception if the cookie has been tampered with, or if the expiration date has passed.
+This will return the originally encoded data as a __Hash__ with string keys.
+
+NOTE: This will throw an exception if the cookie has been tampered with, or if the expiration date has passed.
 
 ## Sample code for application_controller
 
