@@ -25,13 +25,13 @@ module TrivialSso
     end
 
     def wrap
-      mode_set?
+      check_mode_set
       raise Error::WrongMode unless mode == __method__
       TrivialSso::Wrap.new(data, sso_secret, expire_time).wrap
     end
 
     def unwrap
-      mode_set?
+      check_mode_set
       raise Error::WrongMode unless mode == __method__
       response = TrivialSso::UnWrap.new(data, sso_secret).unwrap
       struct ? OpenStruct.new(response) : response
@@ -44,22 +44,25 @@ module TrivialSso
    private
 
     def default_secret
-      rails_sso_secret || SecureRandom.hex(64)
+      get_defined_sso_secret || SecureRandom.hex(64)
     end
 
-    def rails_sso_secret
-      if defined?(Rails) && Rails.configuration.sso_secret
+    def get_defined_sso_secret
+      if rails_sso_secret_exists?
         Rails.configuration.sso_secret
-      # assume if Rails is defined then we want to use it's secret
-      elsif defined?(Rails)
+      elsif defined? Rails
         raise Error::MissingRailsConfig
       else
         false
       end
     end
 
-    def mode_set?
-      raise Error::BadDataSupplied  if mode.nil? || mode.empty?
+    def rails_sso_secret_exists?
+      defined?(Rails) && Rails.configuration.sso_secret
+    end
+
+    def check_mode_set
+      raise Error::BadDataSupplied if mode.nil? || mode.empty?
     end
 
     def time_value_good?(value)
