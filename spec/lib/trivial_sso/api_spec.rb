@@ -26,9 +26,8 @@ describe TrivialSso::Api do
 
   it "gives data" do
     data = TrivialSso::Api.decode(TrivialSso::Api.encode(userdata))
-
-    data.username.should eq userdata['username']
-    data.groups.should   eq userdata['groups']
+    data['username'].should eq userdata['username']
+    data['groups'].should   eq userdata['groups']
   end
 
 end
