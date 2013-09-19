@@ -41,25 +41,25 @@ Note: Setting the [ActionDispatch#expires](http://api.rubyonrails.org/classes/Ac
 
 The actual expiration date that is enforced by the application  is what is encoded in the cookie.
 
-    ```ruby
-    # Create a hash of data we want to store in the cookie.
-    userdata = {
-      "username" => current_user.login,
-      "display"  => current_user.display_name,
-      "groups"   => current_user.memberof
-    }
+```ruby
+# Create a hash of data we want to store in the cookie.
+userdata = {
+  "username" => current_user.login,
+  "display"  => current_user.display_name,
+  "groups"   => current_user.memberof
+}
 
-    #Generate the cookie data
-    cookie = TrivialSso::Login.cookie(userdata)
+#Generate the cookie data
+cookie = TrivialSso::Login.cookie(userdata)
 
-    # Set the cookie
-    cookies[:sso_login] = {
-      :value    => cookie,
-      :expires  => TrivialSso::Login.expire_date,
-      :domain   => 'mydomain.com',
-      :httponly => true,
-    }
-    ```
+# Set the cookie
+cookies[:sso_login] = {
+  :value    => cookie,
+  :expires  => TrivialSso::Login.expire_date,
+  :domain   => 'mydomain.com',
+  :httponly => true,
+}
+```
 
 The above code creates a hash of data we will be putting in the cookie, generates the cookie, and then sets the cookie in the browser.
 
@@ -67,7 +67,9 @@ The above code creates a hash of data we will be putting in the cookie, generate
 
 Retrieve the contents of the cookie by calling decode_cookie
 
-    @userdata = TrivialSso::Login.decode_cookie(cookies[:sso_login])
+```ruby
+@userdata = TrivialSso::Login.decode_cookie(cookies[:sso_login])
+```
 
 This will throw an exception if the cookie has been tampered with, or if the expiration date has passed.
 
@@ -75,44 +77,43 @@ This will throw an exception if the cookie has been tampered with, or if the exp
 
 Here are some methods you can add into your application controller to authenticate against the cookie.
 
-    ```ruby
-    # If there is a problem with the cookie, redirect back to our central login server.
-    rescue_from TrivialSso::CookieError do |exception|
-      redirect_to 'https://login.mydomain.com/'
-    end
+```ruby
+# If there is a problem with the cookie, redirect back to our central login server.
+rescue_from TrivialSso::CookieError do |exception|
+  redirect_to 'https://login.mydomain.com/'
+end
 
-    # authorize our users based on the cookie.
-    before_filter :auth_user!
+# authorize our users based on the cookie.
+before_filter :auth_user!
 
-    # authenticate a user and set @current_user
-    def auth_user!
-      cu = current_user
+# authenticate a user and set @current_user
+def auth_user!
+  cu = current_user
 
-      # Check for authorization based on "groups" data that was put in the cookie
-      # by the central login application.
-      # you could also skip this check and just return true if the cookie is valid.
-      if cu['groups'].include? "ALLOWED_GROUP"    #all lower case
-        @current_user = cu
-        true
-      else
-        render :file => "#{Rails.root}/public/403", :formats => [:html], :status => 403, :layout => false
-      end
+  # Check for authorization based on "groups" data that was put in the cookie
+  # by the central login application.
+  # you could also skip this check and just return true if the cookie is valid.
+  if cu['groups'].include? "ALLOWED_GROUP"    #all lower case
+    @current_user = cu
+    true
+  else
+    render :file => "#{Rails.root}/public/403", :formats => [:html], :status => 403, :layout => false
+  end
 
-      false
-    end
+  false
+end
 
-    # our current_user decodes the cookie.
-    def current_user
-      TrivialSso::Login.decode_cookie(cookies[:sso_login])
-    end
+# our current_user decodes the cookie.
+def current_user
+  TrivialSso::Login.decode_cookie(cookies[:sso_login])
+end
 
-    # Define the name we want to record in paper_trail (if using)
-    def user_for_paper_trail
-      if @current_user.blank?
-        "anonymous"
-      else
-        @current_user['username']
-      end
-    end
-    ```
-
+# Define the name we want to record in paper_trail (if using)
+def user_for_paper_trail
+  if @current_user.blank?
+    "anonymous"
+  else
+    @current_user['username']
+  end
+end
+```
