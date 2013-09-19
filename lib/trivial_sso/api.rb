@@ -10,9 +10,7 @@ module TrivialSso
       end
 
       def decode(data, secret = nil)
-        TrivialSso::Login.new(
-          {data: data, secret: secret}
-        ).unwrap
+        TrivialSso::Login.new({data: data, secret: secret}).unwrap
       end
 
     end
