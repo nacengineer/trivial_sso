@@ -28,11 +28,18 @@ After you've installed the gem, you need to generate a configuration file.
 
 This will create an initializer file with a shared secret. You need to modify this to a big long string of characters. Keep this safe from others as they could forge cookies for your sites if they get ahold of this string. All sites that use the single sign on must have this same shared secret for the cookies to properly interoperate.
 
-## Creating a cookie
+## Creating an encrpyted string
+### Uses [ActiveSupport::MessageEncryptor](http://api.rubyonrails.org/classes/ActiveSupport/MessageEncryptor.html)
 
-A cookie is created using a hash of data supplied to it. This must contain a **username** key.
+A encrypted and signed string is created using of data supplied to it via a [ruby Hash](http://www.ruby-doc.org/core-2.0/Hash.html).
 
-When you create the cookie data an expire time is built into the payload. Setting the **:expires** on the cookie is just a convenience to make sure it gets cleared by the browser. The actual expiration date that matters is what is encoded in the cookie.
+This only requirement is that the Hash must contain a **username** key.
+
+When you create the encrypted string an expire time is added to the payload. You have the option of either providing one, or a default of 9 hours from the current time will be used.
+
+Note: Setting the [ActionDispatch#expires](http://api.rubyonrails.org/classes/ActionDispatch/Cookies.html) on the cookie is just a convenience to make sure it gets cleared by the browser.
+
+The actual expiration date that is enforced by the application  is what is encoded in the cookie.
 
     ```ruby
     # Create a hash of data we want to store in the cookie.
