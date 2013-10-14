@@ -68,21 +68,21 @@ describe TrivialSso::Login do
     expect {
       decode.data = ""
       decode.unwrap
-    }.to raise_error TrivialSso::Error::MissingData
+    }.to raise_error TrivialSso::Error::BadData::Missing
   end
 
   it "raise exception bad signature when given cookie w/o signature as data source" do
     expect {
       decode.data = "BAhbB0kiC2RqbGVlMgY6BkVUbCsHo17iTg"
       decode.unwrap
-    }.to raise_error TrivialSso::Error::BadData
+    }.to raise_error TrivialSso::Error::BadData::Signature
   end
 
   it "raise exception bad message when given cookie w/o encryped data" do
     expect {
       decode.data = "--5b3164f6d1f09fb00d6905d073b18bc45a859b50"
       decode.unwrap
-    }.to raise_error TrivialSso::Error::BadData
+    }.to raise_error TrivialSso::Error::BadData::Signature
   end
 
   it "raise exception on expired cookie" do

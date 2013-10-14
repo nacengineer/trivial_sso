@@ -9,23 +9,43 @@ module TrivialSso
     end
 
     # Cookie can not be verified, data has been altered
-    class BadData < CookieError
-      def to_s
-        "The data supplied was not valid. i.e. bad cookie data given"
+    module BadData
+
+      class Signature < CookieError
+        def to_s
+          "The data signature supplied was not valid."
+        end
       end
+
+      # Cookie can not be verified, data has been altered
+      class Message < CookieError
+        def to_s
+          "The data supplied was not valid. i.e. bad cookie data given"
+        end
+      end
+
+      class Given < CookieError
+        def to_s
+          <<-HERE
+          The data supplied is useless to me. i.e. Can't Wrap or Unwrap.
+          Try passing me some good data.
+          HERE
+        end
+      end
+
+      # Cookie is missing
+      class Missing < CookieError
+        def to_s
+          "No data was given."
+        end
+      end
+
     end
 
     # cookie is no longer valid
     class LoginExpired < CookieError
       def to_s
         "Login cookie has expired!"
-      end
-    end
-
-    # Cookie is missing
-    class MissingData < CookieError
-      def to_s
-        "Login cookie is missing!"
       end
     end
 
@@ -60,14 +80,6 @@ module TrivialSso
       end
     end
 
-    class BadDataSupplied < CookieError
-      def to_s
-        <<-HERE
-        The data supplied is useless to me. i.e. Can't Wrap or Unwrap.
-        Try passing me some good data.
-        HERE
-      end
-    end
 
     class BadExpireTime < CookieError
       def to_s
@@ -78,9 +90,11 @@ module TrivialSso
       end
     end
 
-    class WrongMode < CookieError
-      def to_s
-        "Can't use same object to decode and encode"
+    module Mode
+      class Wrong < CookieError
+        def to_s
+          "Can't use same object to decode and encode"
+        end
       end
     end
 

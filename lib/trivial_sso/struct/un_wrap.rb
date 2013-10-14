@@ -29,15 +29,15 @@ private
     rescue NoMethodError
       raise TrivialSso::Error::MissingConfig
     rescue ActiveSupport::MessageVerifier::InvalidSignature
-      raise TrivialSso::Error::BadData
+      raise TrivialSso::Error::BadData::Signature
     rescue ActiveSupport::MessageEncryptor::InvalidMessage
-      raise TrivialSso::Error::BadData
+      raise TrivialSso::Error::BadData::Message
     end
   end
 
   def has_data?
     if data.nil? || data.empty?
-      raise TrivialSso::Error::MissingData
+      raise TrivialSso::Error::BadData::Missing
     else
       true
     end

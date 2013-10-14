@@ -20,19 +20,19 @@ module TrivialSso
       elsif value.is_a?(Hash)
         @mode, @data = :wrap, OpenStruct.new(value)
       else
-        raise Error::BadDataSupplied
+        raise Error::BadData::Given
       end
     end
 
     def wrap
       check_mode_set
-      raise Error::WrongMode unless mode == __method__
+      raise Error::Mode::Wrong unless mode == __method__
       TrivialSso::Wrap.new(data, sso_secret, expire_time).wrap
     end
 
     def unwrap
       check_mode_set
-      raise Error::WrongMode unless mode == __method__
+      raise Error::Mode::Wrong unless mode == __method__
       response = TrivialSso::UnWrap.new(data, sso_secret).unwrap
       struct ? OpenStruct.new(response) : response
     end
@@ -62,7 +62,7 @@ module TrivialSso
     end
 
     def check_mode_set
-      raise Error::BadDataSupplied if mode.nil? || mode.empty?
+      raise Error::BadData::Given if mode.nil? || mode.empty?
     end
 
     def time_value_good?(value)
