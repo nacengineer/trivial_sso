@@ -25,6 +25,6 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 1.9.3'
   s.require_paths         = ["lib"]
 
-  s.add_dependency "rails",         ">= 4.0.0"
-  s.add_dependency "activesupport", ">= 4.0.0"
+  s.add_dependency "rails",         ">= 3.2.14"
+  s.add_dependency "activesupport", ">= 3.2.14"
 end
