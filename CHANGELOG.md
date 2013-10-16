@@ -1,11 +1,11 @@
 ## TrivialSso Change Log ##
 ### Changelog ###
 
-### 4.0.0.3
-- ease the required ruby back to 1.9.3
+### 3.0.1
+- added accessors: default_expire, default_secret
 
-#### 4.0.0
-- change version high number number to follow supported Rails version
+### 3.0.0
+- rails 3 / ruby 1.9.3 required
 
 #### 0.1.3 ####
 
