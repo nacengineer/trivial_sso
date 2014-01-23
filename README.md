@@ -67,9 +67,9 @@ cookies[:sso_login] = {
 
 The above code creates a hash of data we will be putting in the cookie, generates the cookie, and then sets the cookie in the browser.
 
-## Decoding a cookie
+### Decoding a cookie
 
-Retrieve the contents of the cookie by calling decode
+Retrieve the contents of the cookie by calling Api.decode
 
 ```ruby
 @userdata = TrivialSso::Api.decode(cookies[:sso_login])
