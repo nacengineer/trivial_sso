@@ -2,7 +2,7 @@ module TrivialSso
   class Login
 
     attr_accessor :data, :secret, :expire_time, :struct
-    attr_reader   :wrap, :unwrap, :mode, :secret
+    attr_reader   :wrap, :unwrap, :mode, :secret, :default_expire
 
     def initialize(opts = {})
       opts[:expire_time] = default_expire unless opts[:expire_time]
@@ -41,6 +41,10 @@ module TrivialSso
       TrivialSso::Secret.new(secret).sso_secret
     end
 
+    def default_expire
+      (Time.now + 32400).to_i # 9 hours from now
+    end
+
    private
 
     def default_secret
@@ -77,9 +81,6 @@ module TrivialSso
       value.to_i.nonzero? ? value.to_i : default_expire
     end
 
-    def default_expire
-      (Time.now + 32400).to_i # 9 hours from now
-    end
 
     def available_opts
       [:data, :secret, :expire_time]
