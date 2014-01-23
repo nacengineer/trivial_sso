@@ -39,7 +39,11 @@ When you create the encrypted string an expire time is added to the payload. You
 
 Note: Setting the [ActionDispatch#expires](http://api.rubyonrails.org/classes/ActionDispatch/Cookies.html) on the cookie is just a convenience to make sure it gets cleared by the browser.
 
-The actual expiration date that is enforced by the application  is what is encoded in the cookie.
+The actual expiration date that is enforced by the application  is what is encoded in the cookie.4
+
+Essentiall it is all boiled down to the follwoing...
+
+### create a userdata hash
 
 ```ruby
 # Create a hash of data we want to store in the cookie.
@@ -49,15 +53,15 @@ userdata = {
   "groups"   => current_user.memberof
 }
 
-#Generate the cookie data
-cookie = TrivialSso::Login.cookie(userdata)
+#### Generate the cookie data with Api.encode
+cookie = TrivialSso::Api.encode(userdata)
 
-# Set the cookie
+#### Set the cookie
 cookies[:sso_login] = {
   :value    => cookie,
   :expires  => TrivialSso::Login.expire_date,
   :domain   => 'mydomain.com',
-  :httponly => true,
+  :httponly => true
 }
 ```
 
@@ -65,10 +69,10 @@ The above code creates a hash of data we will be putting in the cookie, generate
 
 ## Decoding a cookie
 
-Retrieve the contents of the cookie by calling decode_cookie
+Retrieve the contents of the cookie by calling decode
 
 ```ruby
-@userdata = TrivialSso::Login.decode_cookie(cookies[:sso_login])
+@userdata = TrivialSso::Api.decode(cookies[:sso_login])
 ```
 
 This will return the originally encoded data as a __Hash__ with string keys.
@@ -107,7 +111,7 @@ end
 
 # our current_user decodes the cookie.
 def current_user
-  TrivialSso::Login.decode_cookie(cookies[:sso_login])
+  TrivialSso::Api.decode(cookies[:sso_login])
 end
 
 # Define the name we want to record in paper_trail (if using)
