@@ -59,7 +59,7 @@ cookie = TrivialSso::Api.encode(userdata)
 #### Set the cookie
 cookies[:sso_login] = {
   :value    => cookie,
-  :expires  => TrivialSso::Login.expire_date,
+  :expires  => TrivialSso::Login.default_expire,
   :domain   => 'mydomain.com',
   :httponly => true
 }
