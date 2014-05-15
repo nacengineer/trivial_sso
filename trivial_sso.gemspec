@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   s.license = 'MIT'
   s.required_ruby_version = '>= 1.9.3'
   s.require_paths         = ["lib"]
-
-  s.add_dependency "rails",         ">= 4.0.0"
-  s.add_dependency "activesupport", ">= 4.0.0"
+  
+  s.add_runtime_dependency 'rails', '~> 4.0', '>= 4.0.0'
+  s.add_runtime_dependency 'activesupport', '~> 4.0', '>= 4.0.0'
 end
