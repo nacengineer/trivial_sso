@@ -8,6 +8,12 @@ module TrivialSso
       end
     end
 
+    class MissingConfig < RuntimeError
+      def to_s
+        "There is somthing wrong with the config of this application"
+      end
+    end
+
     # Cookie can not be verified, data has been altered
     module BadData
 
