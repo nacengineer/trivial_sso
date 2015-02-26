@@ -10,7 +10,7 @@ module TrivialSso
 
     class MissingConfig < RuntimeError
       def to_s
-        "There is somthing wrong with the config of this application"
+        "There is something wrong with the config of this application"
       end
     end
 
