@@ -1,6 +1,9 @@
 ## TrivialSso Change Log ##
 ### Changelog ###
 
+### 4.2.0
+- fixes to support rails 4.2
+
 ### 4.0.2
 - expose the default expire on the Login class
 

@@ -10,7 +10,7 @@ TrivialSso::UnWrap = Struct.new :data, :sso_secret do
 private
 
   def userdata=(value)
-    @userdata = (value.has_key?('table') ? value['table'] : value)
+    @userdata ||= value
   end
 
   def timestamp=(time_as_int)

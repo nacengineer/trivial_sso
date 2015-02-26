@@ -1,3 +1,3 @@
 module TrivialSso
-  VERSION = "4.0.3"
+  VERSION = "4.2.0"
 end
