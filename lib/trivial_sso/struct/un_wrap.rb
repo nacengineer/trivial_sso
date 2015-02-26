@@ -25,8 +25,9 @@ private
   def decode_data_and_timestamp
     begin
       has_data?
-      self.userdata, self.timestamp = \
+      userdata_as_hash, self.timestamp = \
         encrypted_message.decrypt_and_verify(data)
+      self.userdata = OpenStruct.new userdata_as_hash
     rescue NoMethodError
       raise TrivialSso::Error::MissingConfig
     rescue ActiveSupport::MessageVerifier::InvalidSignature
@@ -48,7 +49,8 @@ private
     unless defined? Rails
       raise TrivialSso::Error::MissingRails
     end
-    ActiveSupport::MessageEncryptor.new(sso_secret, serializer: JSON)
+    @encrypted_message ||=
+      ActiveSupport::MessageEncryptor.new(sso_secret, serializer: JSON)
   end
 
 end

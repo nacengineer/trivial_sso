@@ -4,7 +4,7 @@ TrivialSso::Wrap = Struct.new :data, :sso_secret, :expire_time do
 
   def wrap
     begin
-      encryptor.encrypt_and_sign([data, expire_time]) if sanity_check
+      encryptor.encrypt_and_sign([data.to_h, expire_time]) if sanity_check?
     rescue NoMethodError
       raise TrivialSso::Error::MissingConfig
     end
@@ -12,12 +12,13 @@ TrivialSso::Wrap = Struct.new :data, :sso_secret, :expire_time do
 
  private
 
-  def sanity_check
+  def sanity_check?
     sso_secret && check_username || false
   end
 
   def encryptor
-    ActiveSupport::MessageEncryptor.new(sso_secret, serializer: JSON)
+    @encryptor ||=
+      ActiveSupport::MessageEncryptor.new(sso_secret, serializer: JSON)
   end
 
   def check_username
