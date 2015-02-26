@@ -1,7 +1,10 @@
 ## TrivialSso Change Log ##
 ### Changelog ###
 
-### 4.2.0
+### 4.2.1
+- bump rails requirements
+
+### 4.2.0 YANKED
 - fixes to support rails 4.2
 
 ### 4.0.2
