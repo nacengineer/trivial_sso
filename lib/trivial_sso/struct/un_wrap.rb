@@ -25,7 +25,8 @@ private
   def decode_data_and_timestamp
     begin
       has_data?
-      self.userdata, self.timestamp = encrypted_message.decrypt_and_verify(data)
+      self.userdata, self.timestamp = \
+        encrypted_message.decrypt_and_verify(data)
     rescue NoMethodError
       raise TrivialSso::Error::MissingConfig
     rescue ActiveSupport::MessageVerifier::InvalidSignature
